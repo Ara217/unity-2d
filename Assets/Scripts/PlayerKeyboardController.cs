@@ -24,16 +24,41 @@ public class PlayerKeyboardController : MonoBehaviour
 
             if (Input.GetKey(KeyCode.D))
             {
-                Main.MoveRight();
+                Main.MoveRight(Input.GetAxis("Horizontal"));
+            }
+            if (Input.GetKeyUp(KeyCode.D))
+            {
+                Main.Idle();
             }
             if (Input.GetKey(KeyCode.A))
             {
-                Main.MoveLeft();
+                Main.MoveLeft(Input.GetAxis("Horizontal"));
             }
+            if (Input.GetKeyUp(KeyCode.A))
+            {
+                Main.Idle();
+            }
+
+
             if (Input.GetKeyDown(KeyCode.Space))
             {
                 Main.Jump();
             }
         }
     }
+
+    // void OnGUI()
+    //{
+    //    GUILayout.Label("Press Enter To Start Game");
+
+    //    if (Event.current.Equals(Event.KeyboardEvent("[enter]")))
+    //    {
+    //        Application.LoadLevel(1);
+    //    }
+
+    //    if (Event.current.Equals(Event.KeyboardEvent("return")))
+    //    {
+    //        print("I said enter, not return - try the keypad");
+    //    }
+    //}
 }

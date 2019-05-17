@@ -6,7 +6,7 @@ public class Main : MonoBehaviour
 {
     [Header("Speeds")]
     public float WalkSpeed = 3;
-    public float JumpForce = 10;
+    public float JumpForce = 5;
 
     private MoveState _moveState = MoveState.Idle;
     private DirectionState _directionState = DirectionState.Right;
@@ -15,7 +15,7 @@ public class Main : MonoBehaviour
     private Animator _animatorController;
     private float _walkTime = 0, _walkCooldown = 0.2f;
 
-    public void MoveRight()
+    public void MoveRight(float ax)
     {
         if (_moveState != MoveState.Jump)
         {
@@ -25,22 +25,29 @@ public class Main : MonoBehaviour
                 _transform.localScale = new Vector3(-_transform.localScale.x, _transform.localScale.y, _transform.localScale.z);
                 _directionState = DirectionState.Right;
             }
-            _walkTime = _walkCooldown;
+            Vector3 diraaction = _transform.right * ax;
+
+            _transform.position = Vector3.Lerp(_transform.position, _transform.position + diraaction, WalkSpeed * Time.deltaTime);
             _animatorController.Play("Walk");
         }
     }
 
-    public void MoveLeft()
+    public void MoveLeft(float ax)
     {
+
         if (_moveState != MoveState.Jump)
         {
             _moveState = MoveState.Walk;
+            Debug.Log(_directionState);
             if (_directionState == DirectionState.Right)
             {
                 _transform.localScale = new Vector3(-_transform.localScale.x, _transform.localScale.y, _transform.localScale.z);
                 _directionState = DirectionState.Left;
             }
-            _walkTime = _walkCooldown;
+            Vector3 diraaction = -_transform.right * ax;
+            _transform.position = Vector3.Lerp(_transform.position, _transform.position - diraaction, WalkSpeed * Time.deltaTime);
+            //_walkTime = _walkCooldown;
+            _directionState = DirectionState.Left;
             _animatorController.Play("Walk");
         }
     }
@@ -49,13 +56,14 @@ public class Main : MonoBehaviour
     {
         if (_moveState != MoveState.Jump)
         {
-            _rigidbody.velocity = (Vector3.up * JumpForce * Time.deltaTime);
+            //_rigidbody.velocity = (Vector3.up * JumpForce * Time.deltaTime);
+            _rigidbody.AddForce(_transform.up * JumpForce, ForceMode2D.Impulse);
             _moveState = MoveState.Jump;
             _animatorController.Play("Jump");
         }
     }
 
-    private void Idle()
+    public void Idle()
     {
         _moveState = MoveState.Idle;
         _animatorController.Play("Idle");
@@ -69,22 +77,14 @@ public class Main : MonoBehaviour
         _directionState = transform.localScale.x > 0 ? DirectionState.Right : DirectionState.Left;
     }
 
+
+
     private void Update()
     {
 
         if (_moveState == MoveState.Jump)
         {
             if (_rigidbody.velocity == Vector2.zero)
-            {
-                Idle();
-            }
-        }
-        else if (_moveState == MoveState.Walk)
-        {
-            Debug.Log(WalkSpeed * Time.deltaTime);
-            _rigidbody.velocity = ((_directionState == DirectionState.Right ? Vector2.right : -Vector2.right) * WalkSpeed * Time.deltaTime);
-            _walkTime -= Time.deltaTime;
-            if (_walkTime <= 0)
             {
                 Idle();
             }
